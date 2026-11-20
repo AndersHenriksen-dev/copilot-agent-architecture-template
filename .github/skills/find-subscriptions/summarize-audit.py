@@ -10,11 +10,28 @@ anywhere and needs no installed package. It reads one file and writes nothing.
 from __future__ import annotations
 
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
 
 AUDIT_LOG = Path(__file__).resolve().parents[3] / "workspace" / "audit.jsonl"
+
+
+def bare_tool_name(name: str) -> str:
+    """The tool's own name, without whatever prefix the surface put in front of it.
+
+    The log keeps what the hook was sent, and GitHub does not document how an MCP tool is spelled there, so the same
+    tool can appear as `save_summary`, `subfinder/save_summary` or `mcp__subfinder__save_summary`. Counting those as
+    three tools would make the tally useless.
+
+    Args:
+        name: The tool name as the log recorded it.
+
+    Returns:
+        The last segment.
+    """
+    return re.split(r"/|__", name)[-1]
 
 
 def read_entries(path: Path) -> list[dict[str, object]]:
@@ -48,7 +65,7 @@ def tally(entries: list[dict[str, object]]) -> str:
         The report, ready to print.
     """
     outcomes = Counter(str(entry.get("outcome", "unknown")) for entry in entries)
-    tools = Counter(str(entry.get("tool", "unknown")).rsplit("/", maxsplit=1)[-1] for entry in entries)
+    tools = Counter(bare_tool_name(str(entry.get("tool", "unknown"))) for entry in entries)
     lines = [f"{len(entries)} tool calls recorded in {AUDIT_LOG.name}", ""]
     lines += [f"  {outcome:<8} {count}" for outcome, count in sorted(outcomes.items())]
     lines += ["", "By tool:"]
