@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# What a run writes: the tags, the summary and the audit log
+workspace/
+
+# Personal Copilot settings, which Copilot reads but the repo must not carry
+.github/copilot/settings.local.json
+
+# Editors. .vscode/mcp.json is committed on purpose: it is this repo's MCP config for VS Code.
+.vscode/*
+!.vscode/mcp.json
+.idea/
