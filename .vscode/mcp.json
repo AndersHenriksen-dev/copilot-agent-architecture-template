@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "subfinder": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["run", "--quiet", "--project", ".", "python", "-m", "subfinder.lib.mcp_server"]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+# Where the HTTP transport listens, for the read tools reached from GitHub's side.
+path: /mcp
+default_port: 8765
+host: 127.0.0.1

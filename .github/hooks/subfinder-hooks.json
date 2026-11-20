@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "uv run --quiet --project . python -m subfinder.lib.hooks sessionStart",
+        "cwd": ".",
+        "timeoutSec": 30
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": ".*(?:tag_subscription|save_summary)",
+        "command": "uv run --quiet --project . python -m subfinder.lib.hooks preToolUse",
+        "cwd": ".",
+        "timeoutSec": 30
+      }
+    ],
+    "postToolUse": [
+      {
+        "matcher": ".*(?:list_transactions|get_merchant|get_summary|tag_subscription|save_summary)",
+        "command": "uv run --quiet --project . python -m subfinder.lib.hooks postToolUse",
+        "cwd": ".",
+        "timeoutSec": 30
+      }
+    ],
+    "agentStop": [
+      {
+        "command": "uv run --quiet --project . python -m subfinder.lib.hooks agentStop",
+        "cwd": ".",
+        "timeoutSec": 30
+      }
+    ]
+  }
+}

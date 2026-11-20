@@ -1,0 +1,21 @@
+# GitHub Models speaks the OpenAI chat-completions shape at this path.
+endpoint: https://models.github.ai/inference/chat/completions
+api_version: "2022-11-28"
+schema_name: cleaned_lines
+max_tokens: 4096
+timeout_seconds: 120.0
+
+# No temperature, top_p or other sampling parameter is sent. The default is what the catalog's own examples use, and
+# a model that rejects an unsupported parameter would fail the whole call for no gain.
+system: >-
+  You are given the raw descriptions from one bank statement, as a JSON array of strings.
+
+  For every description, return the clean merchant name and one category. Use exactly one merchant name for one
+  real merchant, however differently the bank wrote it: "TUNEBOX P2F3A1", "TNBX*PREMIUM" and "TUNEBOX AB STHLM"
+  are all Tunebox. Write the merchant the way the company writes it, not in capitals.
+
+  Categories: subscription for something charged every month by choice, such as streaming, a gym or storage.
+  housing for rent. bill for a utility or phone contract. groceries for a supermarket. income for money coming in.
+  other for anything else, including one-off shopping, travel and eating out.
+
+  Return one entry per description given, and never invent a description that was not in the input.
