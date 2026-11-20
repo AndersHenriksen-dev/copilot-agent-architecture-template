@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read # the secret scan lists a pull request's commits through the API
 
 jobs:
   checks:
@@ -33,8 +32,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+          fetch-depth: 0 # gitleaks git mode reads the whole history
+      # Run the binary rather than gitleaks-action, which scans the range between two commits.
+      # That range has no parent on a repository's first push, and a template gets a first push
+      # by definition, so the action fails for everyone who clicks "Use this template". Scanning
+      # the whole history has no range to get wrong. The version matches .pre-commit-config.yaml.
+      - name: Secret scan
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_COMMENTS: "false" # commenting needs write access; a leak still fails the job
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz gitleaks
+          ./gitleaks git . --config .gitleaks.toml --redact --verbose
